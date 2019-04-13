@@ -1,0 +1,12 @@
+{
+	"cookies": {
+	    "X-APPLE-WEBAUTH-USER": "",
+    	"X-APPLE-WEBAUTH-TOKEN": ""
+	},
+	"params": {
+	    "clientBuildNumber": "",
+	    "clientId": "",
+	    "clientMasteringNumber": "",
+	    "dsid": ""
+	}
+}
