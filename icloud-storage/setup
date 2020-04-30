@@ -1,0 +1,40 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+
+echo
+echo "SIGN IN TO ICLOUD"
+printf "Username:"
+read username
+printf "Password:"
+read -s password
+
+response=$(curl -s "https://idmsa.apple.com/appleauth/auth/signin" \
+-H "Accept: application/json, text/javascript, */*; q=0.01" \
+-H "Accept-Language: en-GB,en;q=0.5" \
+-H "Content-Type: application/json" \
+-H "X-Apple-Widget-Key: d39ba9916b7251055b22c7f910e2ea796ee65e98b2ddecea8f5dde8d9d1a815d" \
+-H "X-Requested-With: XMLHttpRequest" \
+--data "{\"accountName\":\"${username}\",\"rememberMe\":true,\"password\":\"${password}\",\"trustTokens\":[]}")
+
+if [[ "$response" == *"\"sa\""* ]]
+then
+	code=""
+else
+	echo
+	echo
+	echo "TWO FACTOR AUTHENTICATION"
+	echo "A message with a verification code has been sent to your devices. Please enter the code to continue."
+	printf "Code:"
+	read code
+fi
+
+encoded=$(printf "${username}:${password}${code}" | base64)
+
+curl -s "https://setup.icloud.com/setup/authenticate/\$APPLE_ID\$" \
+-H "Authorization: Basic ${encoded}" > auth.plist
+
+plutil -convert json auth.plist -o auth.json
+rm auth.plist
+
+exit
